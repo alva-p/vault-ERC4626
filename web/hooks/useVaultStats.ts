@@ -14,63 +14,20 @@ function formatTimeLabel(timestamp: number) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function seededRandom(seed: number) {
-  let value = seed % 2147483647;
-  if (value <= 0) value += 2147483646;
-  return () => {
-    value = (value * 16807) % 2147483647;
-    return (value - 1) / 2147483646;
-  };
-}
-
-function buildMockSeries(seed: number) {
-  const rand = seededRandom(seed);
-  const today = new Date();
-  const base = new Date(today.getTime());
-  base.setDate(base.getDate() - 35);
-
-  const priceSeries: SeriesPoint[] = [];
-  const flowSeries: SeriesPoint[] = [];
-  let price = 1 + rand() * 0.02;
-
-  for (let i = 0; i < 6; i += 1) {
-    const pointDate = new Date(base.getTime());
-    pointDate.setDate(pointDate.getDate() + i * 7);
-    const label = pointDate.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-
-    price = Math.max(0.98, price + (rand() - 0.35) * 0.015);
-    priceSeries.push({ time: label, value: Number(price.toFixed(4)) });
-
-    const flow = Math.round((rand() - 0.35) * 2000);
-    flowSeries.push({ time: label, value: flow });
-  }
-
-  return { priceSeries, flowSeries };
-}
-
 export function useVaultStats(vaultAddress?: `0x${string}`, decimals = 18) {
   const publicClient = usePublicClient();
   const { events, isLoading: eventsLoading } = useVaultEvents(vaultAddress);
   const [priceSeries, setPriceSeries] = useState<SeriesPoint[]>([]);
   const [flowSeries, setFlowSeries] = useState<SeriesPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [mockSeed, setMockSeed] = useState(() => Math.floor(Date.now() / 3600000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMockSeed(Math.floor(Date.now() / 3600000));
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
 
     const buildSeries = async () => {
       if (!publicClient || !vaultAddress || events.length === 0) {
-        const mocks = buildMockSeries(mockSeed);
-        setPriceSeries(mocks.priceSeries);
-        setFlowSeries(mocks.flowSeries);
+        setPriceSeries([]);
+        setFlowSeries([]);
         setIsLoading(false);
         return;
       }
@@ -126,7 +83,7 @@ export function useVaultStats(vaultAddress?: `0x${string}`, decimals = 18) {
     return () => {
       isMounted = false;
     };
-  }, [publicClient, vaultAddress, decimals, events, mockSeed]);
+  }, [publicClient, vaultAddress, decimals, events]);
 
   return useMemo(
     () => ({ priceSeries, flowSeries, isLoading: isLoading || eventsLoading }),

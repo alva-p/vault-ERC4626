@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp } from "lucide-react";
 
 import CountUp from "@/components/CountUp";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,10 +46,6 @@ export default function OverviewCard() {
               <p className="text-2xl font-semibold text-primary">
                 <CountUp value={Number(pricePerShare)} decimals={4} />
               </p>
-              <div className="flex items-center gap-2 text-xs text-emerald-300">
-                <TrendingUp className="h-4 w-4" />
-                +2.1% (dev)
-              </div>
             </div>
           )}
         </CardContent>

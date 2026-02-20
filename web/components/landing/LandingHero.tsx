@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const fadeUp = {
@@ -37,17 +36,6 @@ export default function LandingHero() {
         A modern ERC-4626 dashboard that keeps yield transparent, flows smooth, and every conversion visible.
         Built for composable vaults and human-friendly finance.
       </motion.p>
-      <motion.div
-        className="flex flex-wrap items-center gap-3"
-        initial="hidden"
-        animate="visible"
-        variants={fadeUp}
-        transition={{ duration: 0.7, delay: 0.15 }}
-      >
-        <Button variant="secondary" type="button">
-          View Dashboard
-        </Button>
-      </motion.div>
     </section>
   );
 }
